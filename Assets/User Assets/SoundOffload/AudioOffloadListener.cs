@@ -28,7 +28,7 @@ public class AudioOffloadListener : MonoBehaviour {
 	void OnAudioFilterRead(float[] data, int channels)
 	{
 		for (int i=0; i < data.Length; i++) {
-			data[i] = 0.0f;
+			data[i] = data[i];
 		}
 	}
 
