@@ -42,6 +42,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+		private Vector3 LastMoveDir = Vector3.zero;
+		private float AirControlPercent = 0.03f; 
+
         // Use this for initialization
         private void Start()
         {
@@ -105,13 +108,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
                                m_CharacterController.height/2f);
             desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
 
-            m_MoveDir.x = desiredMove.x*speed;
-            m_MoveDir.z = desiredMove.z*speed;
-
-
             if (m_CharacterController.isGrounded)
             {
                 m_MoveDir.y = -m_StickToGroundForce;
+				m_MoveDir.x = desiredMove.x*speed;
+				m_MoveDir.z = desiredMove.z*speed;
 
                 if (m_Jump)
                 {
@@ -123,9 +124,23 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
             else
             {
-                m_MoveDir += Physics.gravity*m_GravityMultiplier*Time.fixedDeltaTime;
+				//If jumping, use the cached speed offset by our movement choice.
+				//Only allow slowing, not speed-up.
+				if ((desiredMove.x*speed * LastMoveDir.x + desiredMove.z*speed * LastMoveDir.z) < 0)
+				{
+					m_MoveDir.x = LastMoveDir.x + (AirControlPercent * desiredMove.x*speed);
+					m_MoveDir.z = LastMoveDir.z + (AirControlPercent * desiredMove.z*speed);
+				}
+				else
+				{
+					m_MoveDir.x = LastMoveDir.x;
+					m_MoveDir.z = LastMoveDir.z;
+				}
+				m_MoveDir += Physics.gravity*m_GravityMultiplier*Time.fixedDeltaTime;
             }
             m_CollisionFlags = m_CharacterController.Move(m_MoveDir*Time.fixedDeltaTime);
+
+			LastMoveDir = m_MoveDir;
 
             ProgressStepCycle(speed);
             UpdateCameraPosition(speed);
