@@ -25,8 +25,7 @@ public class AudioOffloadListener : MonoBehaviour {
 		updateClock(Time.unscaledTime);
 	}
 
-	void OnAudioFilterRead(float[] data, int channels)
-	{
+	void OnAudioFilterRead (float[] data, int channels) {
 		for (int i=0; i < data.Length; i++) {
 			data[i] = data[i];
 		}
