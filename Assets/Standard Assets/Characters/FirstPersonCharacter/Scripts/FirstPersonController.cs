@@ -126,10 +126,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
 				//If jumping, use the cached speed offset by our movement choice.
 				//Only allow slowing, not speed-up.
+				//FIXME: Small amount of lateral movement is possible if player rotates camera a bit and presses back.
 				if ((desiredMove.x*speed * LastMoveDir.x + desiredMove.z*speed * LastMoveDir.z) < 0)
 				{
 					m_MoveDir.x = LastMoveDir.x + (AirControlPercent * desiredMove.x*speed);
 					m_MoveDir.z = LastMoveDir.z + (AirControlPercent * desiredMove.z*speed);
+
+					//Don't let character move backwards.
+					if ((LastMoveDir.x * m_MoveDir.x + LastMoveDir.z * m_MoveDir.z) <= 0)
+					{
+						m_MoveDir.x = 0;
+						m_MoveDir.z = 0;
+					}
 				}
 				else
 				{
