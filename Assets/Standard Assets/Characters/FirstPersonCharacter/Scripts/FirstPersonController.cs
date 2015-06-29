@@ -43,7 +43,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private AudioSource m_AudioSource;
 
 		private Vector3 LastMoveDir = Vector3.zero;
-		private float AirControlPercent = 0.03f; 
+		private float AirControlPercent = 0.025f; //Accumulates per FixedUpdate().
 
         // Use this for initialization
         private void Start()
@@ -124,18 +124,37 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
             else
             {
-				//If jumping, use the cached speed offset by our movement choice.
-				//Only allow slowing, not speed-up.
-				//FIXME: Small amount of lateral movement is possible if player rotates camera a bit and presses back.
-				if ((desiredMove.x*speed * LastMoveDir.x + desiredMove.z*speed * LastMoveDir.z) < 0)
-				{
-					m_MoveDir.x = LastMoveDir.x + (AirControlPercent * desiredMove.x*speed);
-					m_MoveDir.z = LastMoveDir.z + (AirControlPercent * desiredMove.z*speed);
+				Vector3 impulse;
+				impulse.x = desiredMove.x*speed;
+				impulse.y = 0;
+				impulse.z = desiredMove.z*speed;
 
-					//Don't let character move backwards.
-					if ((LastMoveDir.x * m_MoveDir.x + LastMoveDir.z * m_MoveDir.z) <= 0)
+				float dotImpulseLast = (impulse.x * LastMoveDir.x + impulse.z * LastMoveDir.z);
+
+				if (dotImpulseLast < 0)
+				{
+					Vector3 moveNormal = LastMoveDir;
+					moveNormal.y = 0; //Ignore vertical movement.
+					moveNormal.Normalize();
+					float projection = (impulse.x * moveNormal.x + impulse.z * moveNormal.z); //Will be negative
+
+					float adjustX = (moveNormal.x * projection * AirControlPercent);
+					float adjustZ = (moveNormal.z * projection * AirControlPercent);
+
+					if (Math.Abs(LastMoveDir.x) > Math.Abs(adjustX))
+					{
+						m_MoveDir.x = LastMoveDir.x + adjustX;
+					}
+					else
 					{
 						m_MoveDir.x = 0;
+					}
+					if (Math.Abs(LastMoveDir.z) > Math.Abs(adjustZ))
+					{
+						m_MoveDir.z = LastMoveDir.z + adjustZ;
+					}
+					else
+					{
 						m_MoveDir.z = 0;
 					}
 				}
@@ -144,6 +163,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 					m_MoveDir.x = LastMoveDir.x;
 					m_MoveDir.z = LastMoveDir.z;
 				}
+
 				m_MoveDir += Physics.gravity*m_GravityMultiplier*Time.fixedDeltaTime;
             }
             m_CollisionFlags = m_CharacterController.Move(m_MoveDir*Time.fixedDeltaTime);
