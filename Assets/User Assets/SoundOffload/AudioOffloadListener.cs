@@ -9,7 +9,7 @@ public class AudioOffloadListener : MonoBehaviour {
 	private List<AudioOffloadCall> soundCalls; //List of sounds to process.
 	private List<AudioOffloadCall> newCalls; //List to add to soundCalls list next chunk.
 	//Consider an endCalls list to trigger audioend events, if we need it.
-	private double lastFrameTime;
+	private float lastFrameTime;
 	private int sampleRate;
 
 	// Use this for initialization
@@ -34,11 +34,11 @@ public class AudioOffloadListener : MonoBehaviour {
 	public void addSoundCall (AudioOffloadCall soundCall) {
 		if (soundCall.isValid()) {
 			newCalls.Add(soundCall);
-			soundCall.setLastFrameTime(lastFrameTime);
+			soundCall.setStartFrameTime(lastFrameTime);
 		}
 	}
 
 	void updateClock (double frameTime) {
-		lastFrameTime = frameTime;
+		lastFrameTime = (float) frameTime;
 	}
 }
