@@ -50,9 +50,11 @@ public class AudioOffloadCall
 
     public void setAudioClip(AudioClip Clip)
     {
-        if (audioContent.loadState == AudioDataLoadState.Loaded)
+        if (audioContent.loadState == AudioDataLoadState.Loaded 
+            && audioContent.loadType == AudioClipLoadType.DecompressOnLoad)
         {
             audioContent = Clip;
+            audioContent.GetData(sampleArray, 0);
         }
         else
         {
