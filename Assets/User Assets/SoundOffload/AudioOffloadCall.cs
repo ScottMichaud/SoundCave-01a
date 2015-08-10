@@ -67,7 +67,7 @@ public class AudioOffloadCall
         startTime = Time;
     }
 
-    public float[] getSamplePointer(int NumberOfSamples)
+    public float[] getSampleChunk(int NumberOfSamples)
     {
         if (!audioContent)
         {
@@ -95,7 +95,12 @@ public class AudioOffloadCall
         return output;
     }
 
-    public int getLastSample()
+    public float[] getAllSamples()
+    {
+        return sampleArray;
+    }
+
+    public int getLastSampleNumber()
     {
         if (!audioContent)
         {
