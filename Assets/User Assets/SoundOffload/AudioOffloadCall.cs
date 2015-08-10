@@ -69,7 +69,7 @@ public class AudioOffloadCall
     {
         if (!audioContent)
         {
-            return null;
+            return new float[1] { 0.0F };
         }
 
         float[] output = new float[NumberOfSamples];
