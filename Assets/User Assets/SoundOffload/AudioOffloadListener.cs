@@ -5,6 +5,9 @@ using System.Collections.Generic;
 public class AudioOffloadListener : MonoBehaviour {
 	public bool isEnabled;
 
+    private float[] outBuffer;
+    private float[] scratchBuffer;
+
 	private AudioListener audioDestination;
 	private List<AudioOffloadCall> soundCalls; //List of sounds to process.
 	private List<AudioOffloadCall> newCalls; //List to add to soundCalls list next chunk.
@@ -24,6 +27,7 @@ public class AudioOffloadListener : MonoBehaviour {
 		audioDestination = GetComponentInParent<AudioListener>();
 		lastFrameTime = Time.unscaledTime;
 		sampleRate = AudioSettings.outputSampleRate;
+        outBuffer = new float[0];
 	}
 	
 	// Update is called once per video frame
@@ -38,14 +42,46 @@ public class AudioOffloadListener : MonoBehaviour {
         }
 	}
 
-    // This is called once per audio frame
-    // Tasks: Swap buffer, update each call property if necessary, and queue new computation.
+   /**
+   * Callback for each audio frame.
+   *
+   * Tasks: Juggle buffers as necessary, update each call property as necessary, and queue new computation.
+   * We're currently going to try a double-buffer method. More could be added as necessary. Less is lower latency.
+   * Reminder that not-offloaded audio calls are not buffered. They enter and leave with data unmodified and instantly.
+   *
+   * @param data The buffer containing Unity audio mixdown, which will be output when function terminates
+   * @param channels The number of speakers to output to. 2 is Stereo.
+   */
 	void OnAudioFilterRead (float[] data, int channels)
     {
-		for (int i=0; i < data.Length; i++)
+        //If we calculate a different size buffer 
+        if (outBuffer.Length == data.Length)
         {
-			data[i] = data[i];
-		}
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] += outBuffer[i]; //Add our audio to Unity's buffer.
+            }
+        }
+        else
+        {
+            outBuffer = new float[data.Length]; //Buffer size changed on the fly, or the filter started.
+            scratchBuffer = new float[data.Length]; //Doing so also dumps computation, if it existed.
+        }
+
+        //Flag onPlay callbacks to be executed for each new call, if necessary.
+        //Don't run the calls here, because this is on the Audio thread. Flip a boolean.
+
+        if (newCalls.Count > 0)
+        {
+            soundCalls.AddRange(newCalls);
+            newCalls.Clear();
+        }
+
+        for (int i = 0; i < soundCalls.Count; i++)
+        {
+            soundCalls[i].setVelocity();
+            soundCalls[i].setLocation();
+        }
 	}
 
 	public void addSoundCall (AudioOffloadCall SoundCall)

@@ -21,6 +21,7 @@ public class AudioOffloadCall
 
 	private Vector3 location; //Where the sound supposedly occured.
 	private Vector3 velocity; //Speed of source. (NOTE: Allow on the fly updates.)
+    private AudioOffloadSource source; //Source that caused this call
 
     public AudioOffloadCall()
     {
@@ -45,7 +46,7 @@ public class AudioOffloadCall
     * Currently, it requires the audio to be loaded and decoded before creating the sound call.
     * This will probably be done by the source at load time, or further upstream.
     *
-    * @param Clip the Unity AudioClip that this call handles
+    * @param Clip The Unity AudioClip that this call handles
     */
 
     public void setAudioClip(AudioClip Clip)
@@ -123,6 +124,22 @@ public class AudioOffloadCall
     public void setVelocity(float X, float Y, float Z)
     {
         velocity = new Vector3(X, Y, Z);
+    }
+
+    public void setVelocity()
+    {
+        if (source)
+        {
+            velocity = source.getVelocity();
+        }
+    }
+
+    public void setLocation()
+    {
+        if (source)
+        {
+            location = source.getLocation();
+        }
     }
 
     public Vector3 getVelocity()
