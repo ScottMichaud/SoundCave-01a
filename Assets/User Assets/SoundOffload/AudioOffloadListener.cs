@@ -34,7 +34,7 @@ public class AudioOffloadListener : MonoBehaviour {
 	public void addSoundCall (AudioOffloadCall soundCall) {
 		if (soundCall.isValid()) {
 			newCalls.Add(soundCall);
-			soundCall.setStartFrameTime(lastFrameTime);
+			soundCall.setStartTime(lastFrameTime);
 		}
 	}
 

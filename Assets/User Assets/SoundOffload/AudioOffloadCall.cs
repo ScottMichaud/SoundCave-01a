@@ -54,6 +54,7 @@ public class AudioOffloadCall
             && audioContent.loadType == AudioClipLoadType.DecompressOnLoad)
         {
             audioContent = Clip;
+            sampleArray = new float[audioContent.samples];
             audioContent.GetData(sampleArray, 0);
         }
         else
@@ -62,9 +63,14 @@ public class AudioOffloadCall
         }
     }
 
-    public void setStartFrameTime(float Time)
+    public void setStartTime(float Time)
     {
         startTime = Time;
+    }
+
+    public float getStartTime()
+    {
+        return startTime;
     }
 
     public float[] getSampleChunk(int NumberOfSamples)
@@ -107,6 +113,51 @@ public class AudioOffloadCall
             return -1;
         }
         return audioContent.samples;
+    }
+
+    public void setVelocity(Vector3 Velocity)
+    {
+        velocity = Velocity;
+    }
+
+    public void setVelocity(float X, float Y, float Z)
+    {
+        velocity = new Vector3(X, Y, Z);
+    }
+
+    public Vector3 getVelocity()
+    {
+        return velocity;
+    }
+
+    public void setLocation(Vector3 Location)
+    {
+        location = Location;
+    }
+
+    public void setLocation(float X, float Y, float Z)
+    {
+        location = new Vector3(X, Y, Z);
+    }
+
+    public Vector3 getLocation()
+    {
+        return location;
+    }
+
+    public void setLooping()
+    {
+        bLooping = true;
+    }
+
+    public void stopLooping()
+    {
+        bLooping = false;
+    }
+
+    public bool isLooping()
+    {
+        return bLooping;
     }
 
     public bool isValid()
