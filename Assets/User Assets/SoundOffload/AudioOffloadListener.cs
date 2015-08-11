@@ -8,37 +8,57 @@ public class AudioOffloadListener : MonoBehaviour {
 	private AudioListener audioDestination;
 	private List<AudioOffloadCall> soundCalls; //List of sounds to process.
 	private List<AudioOffloadCall> newCalls; //List to add to soundCalls list next chunk.
-	//Consider an endCalls list to trigger audioend events, if we need it.
+
+    //Consider an endCalls list to trigger audioend events, if we need it.
+
+    private Vector3 location;
+    private Vector3 velocity;
+
 	private float lastFrameTime;
 	private int sampleRate;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
 		//Acquire the co-resident AudioListener
 		audioDestination = GetComponentInParent<AudioListener>();
 		lastFrameTime = Time.unscaledTime;
 		sampleRate = AudioSettings.outputSampleRate;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		updateClock(Time.unscaledTime);
+	// Update is called once per video frame
+	void Update ()
+    {
+		setLastFrameTime(Time.unscaledTime);
+
+        if (audioDestination)
+        {
+            velocity = (audioDestination.transform.position - location) / Time.deltaTime;
+            location = audioDestination.transform.position;
+        }
 	}
 
-	void OnAudioFilterRead (float[] data, int channels) {
-		for (int i=0; i < data.Length; i++) {
+    // This is called once per audio frame
+    // Tasks: Swap buffer, update each call property if necessary, and queue new computation.
+	void OnAudioFilterRead (float[] data, int channels)
+    {
+		for (int i=0; i < data.Length; i++)
+        {
 			data[i] = data[i];
 		}
 	}
 
-	public void addSoundCall (AudioOffloadCall soundCall) {
-		if (soundCall.isValid()) {
-			newCalls.Add(soundCall);
-			soundCall.setStartTime(lastFrameTime);
+	public void addSoundCall (AudioOffloadCall SoundCall)
+    {
+		if (SoundCall.isValid())
+        {
+			newCalls.Add(SoundCall);
+			SoundCall.setStartTime(lastFrameTime);
 		}
 	}
 
-	void updateClock (double frameTime) {
-		lastFrameTime = (float) frameTime;
+	void setLastFrameTime (double FrameTime)
+    {
+		lastFrameTime = (float) FrameTime;
 	}
 }
