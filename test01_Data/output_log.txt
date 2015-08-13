@@ -1,0 +1,51 @@
+Mono path[0] = 'C:/UnityProjects/SoundCave-01a/test01_Data/Managed'
+Mono path[1] = 'C:/UnityProjects/SoundCave-01a/test01_Data/Mono'
+Mono config path = 'C:/UnityProjects/SoundCave-01a/test01_Data/Mono/etc'
+PlayerConnection initialized from C:/UnityProjects/SoundCave-01a/test01_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55363
+Multi-casting "[IP] 192.168.1.109 [Port] 55363 [Flags] 3 [Guid] 1215717744 [EditorId] 4098950721 [Version] 1048832 [Id] WindowsPlayer(WIN-THMCKCN0J8B) [Debug] 1" to [225.0.0.222:54997]...
+Waiting for connection from host on [192.168.1.109:55363]...
+PlayerConnection accepted from [192.168.1.109] handle:0x274
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56744
+PlayerConnection already initialized - listening to [192.168.1.109:55363]
+Initialize engine version: 5.1.2f1 (afd2369b692a)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 670 (ID=0x1189)
+    Vendor:   NVIDIA
+    VRAM:     1990 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading C:\UnityProjects\SoundCave-01a\test01_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\UnityProjects\SoundCave-01a\test01_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\UnityProjects\SoundCave-01a\test01_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.040 seconds
+desktop: 1920x1080 120Hz; virtual: 5760x2130 at -1920,-1050
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\UnityProjects\SoundCave-01a\test01_Data\Managed\System.dll (this message is harmless)
+NullReferenceException: Object reference not set to an instance of an object
+  at AudioOffloadListener.OnAudioFilterRead (System.Single[] data, Int32 channels) [0x00025] in C:\UnityProjects\SoundCave-01a\Assets\User Assets\SoundOffload\AudioOffloadListener.cs:67 
+ 
+(Filename: C:/UnityProjects/SoundCave-01a/Assets/User Assets/SoundOffload/AudioOffloadListener.cs Line: 67)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at AudioOffloadListener.OnAudioFilterRead (System.Single[] data, Int32 channels) [0x00025] in C:\UnityProjects\SoundCave-01a\Assets\User Assets\SoundOffload\AudioOffloadListener.cs:67 
+ 
+(Filename: C:/UnityProjects/SoundCave-01a/Assets/User Assets/SoundOffload/AudioOffloadListener.cs Line: 67)
+
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: aab0 -> priority: 1 
+  Thread -> id: 2488 -> priority: 1 
+Waiting for finish
