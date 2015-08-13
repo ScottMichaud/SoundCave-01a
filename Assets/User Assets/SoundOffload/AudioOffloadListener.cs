@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class AudioOffloadListener : MonoBehaviour {
 	public bool isEnabled;
 
+    private bool bRenderComplete;
     private float[] outBuffer;
     private float[] scratchBuffer;
 
@@ -20,6 +20,14 @@ public class AudioOffloadListener : MonoBehaviour {
 	private float lastFrameTime;
 	private int sampleRate;
 
+    // Use in place of a constructor
+    void Awake()
+    {
+        outBuffer = new float[0];
+        soundCalls = new List<AudioOffloadCall>();
+        newCalls = new List<AudioOffloadCall>();
+    }
+
 	// Use this for initialization
 	void Start ()
     {
@@ -27,20 +35,25 @@ public class AudioOffloadListener : MonoBehaviour {
 		audioDestination = GetComponentInParent<AudioListener>();
 		lastFrameTime = Time.unscaledTime;
 		sampleRate = AudioSettings.outputSampleRate;
-        outBuffer = new float[0];
 	}
 	
 	// Update is called once per video frame
 	void Update ()
     {
-		setLastFrameTime(Time.unscaledTime);
+		
+	}
+
+    void FixedUpdate ()
+    {
+        setLastFrameTime(Time.unscaledTime);
 
         if (audioDestination)
         {
-            velocity = (audioDestination.transform.position - location) / Time.deltaTime;
+            velocity = (audioDestination.transform.position - location) / Time.fixedDeltaTime;
+            Debug.Log(velocity);
             location = audioDestination.transform.position;
         }
-	}
+    }
 
    /**
    * Callback for each audio frame.
@@ -54,8 +67,15 @@ public class AudioOffloadListener : MonoBehaviour {
    */
 	void OnAudioFilterRead (float[] data, int channels)
     {
-        //If we calculate a different size buffer 
-        if (outBuffer.Length == data.Length)
+        //If the offloaded sound isn't finished yet, fail to replaying the previous buffer.
+        if (bRenderComplete)
+        {
+            float[] temp = outBuffer;
+            outBuffer = scratchBuffer;
+            scratchBuffer = temp;
+        }
+
+        if (outBuffer.Length == data.Length) //Either first queue, or buffer size changed.
         {
             for (int i = 0; i < data.Length; i++)
             {
@@ -64,8 +84,8 @@ public class AudioOffloadListener : MonoBehaviour {
         }
         else
         {
-            outBuffer = new float[data.Length]; //Buffer size changed on the fly, or the filter started.
-            scratchBuffer = new float[data.Length]; //Doing so also dumps computation, if it existed.
+            outBuffer = new float[data.Length];
+            scratchBuffer = new float[data.Length];
         }
 
         //Flag onPlay callbacks to be executed for each new call, if necessary.
@@ -82,7 +102,24 @@ public class AudioOffloadListener : MonoBehaviour {
             soundCalls[i].setVelocity();
             soundCalls[i].setLocation();
         }
+
+        if (bRenderComplete)
+        {
+            bRenderComplete = false;
+            enqueueSoundProcessing(soundCalls, scratchBuffer, this);
+        }
 	}
+
+    public void enqueueSoundProcessing(List<AudioOffloadCall> SoundCalls, float[] ScratchBuffer, AudioOffloadListener Listener)
+    {
+
+        Listener.finishSoundProcessing();
+    }
+
+    public void finishSoundProcessing()
+    {
+        bRenderComplete = true;
+    }
 
 	public void addSoundCall (AudioOffloadCall SoundCall)
     {
