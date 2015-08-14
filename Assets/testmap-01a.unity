@@ -134,6 +134,10 @@ Prefab:
       propertyPath: Priority
       value: 128
       objectReference: {fileID: 0}
+    - target: {fileID: 8200000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
   m_IsPrefabParent: 0
@@ -312,6 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b132c43e30b26214e9ff775ccbeb7a75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SelectedClip: {fileID: 8300000, guid: c4d8928c75c21af43998193f0f038429, type: 3}
 --- !u!114 &1956320748
 MonoBehaviour:
   m_ObjectHideFlags: 0

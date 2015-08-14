@@ -50,8 +50,8 @@ public class AudioOffloadCall
 
     public void setAudioClip(AudioClip Clip)
     {
-        if (audioContent.loadState == AudioDataLoadState.Loaded 
-            && audioContent.loadType == AudioClipLoadType.DecompressOnLoad)
+        if (Clip.loadState == AudioDataLoadState.Loaded 
+            && Clip.loadType == AudioClipLoadType.DecompressOnLoad)
         {
             audioContent = Clip;
             sampleArray = new float[audioContent.samples];
@@ -90,12 +90,21 @@ public class AudioOffloadCall
             }
             else if (bLooping)
             {
-                output[i] = sampleArray[currentSample + i % sampleArray.Length]; //Handle multiple loops per output buffer, albeit unlikely.
+                output[i] = sampleArray[(currentSample + i) % sampleArray.Length]; //Handle multiple loops per output buffer, albeit unlikely.
             }
             else
             {
                 output[i] = 0.0F;
             }
+        }
+
+        if (bLooping)
+        {
+            currentSample = (currentSample + NumberOfSamples) % sampleArray.Length;
+        }
+        else
+        {
+            currentSample = (currentSample + NumberOfSamples);
         }
 
         return output;

@@ -35,6 +35,7 @@ public class AudioOffloadListener : MonoBehaviour {
 		audioDestination = GetComponentInParent<AudioListener>();
 		lastFrameTime = Time.unscaledTime;
 		sampleRate = AudioSettings.outputSampleRate;
+        bRenderComplete = true;
 	}
 	
 	// Update is called once per video frame
@@ -50,7 +51,6 @@ public class AudioOffloadListener : MonoBehaviour {
         if (audioDestination)
         {
             velocity = (audioDestination.transform.position - location) / Time.fixedDeltaTime;
-            Debug.Log(velocity);
             location = audioDestination.transform.position;
         }
     }
@@ -58,8 +58,9 @@ public class AudioOffloadListener : MonoBehaviour {
    /**
    * Callback for each audio frame.
    *
-   * Tasks: Juggle buffers as necessary, update each call property as necessary, and queue new computation.
-   * We're currently going to try a double-buffer method. More could be added as necessary. Less is lower latency.
+   * Tasks: Juggle buffers, update each call property as necessary, and queue new computation.
+   * We're currently going to try a double-buffer method. More could be added if it makes sense for the compute device.
+   * Ex: Easy CPU multicore is 1 buffer per core. GPUs could benefit from triple-buffer. Less is lower latency, though.
    * Reminder that not-offloaded audio calls are not buffered. They enter and leave with data unmodified and instantly.
    *
    * @param data The buffer containing Unity audio mixdown, which will be output when function terminates
@@ -112,8 +113,8 @@ public class AudioOffloadListener : MonoBehaviour {
 
     public void enqueueSoundProcessing(List<AudioOffloadCall> SoundCalls, float[] ScratchBuffer, AudioOffloadListener Listener)
     {
-
-        Listener.finishSoundProcessing();
+        AudioOffloadProcessor.QueueTask(SoundCalls, ScratchBuffer, Listener);
+        //Listener.finishSoundProcessing();
     }
 
     public void finishSoundProcessing()
