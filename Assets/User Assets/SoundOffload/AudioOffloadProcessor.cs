@@ -3,11 +3,38 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
+/**
+* AudioOffloadProcessor is a static utility class that accepts Offload processing tasks and dumps the results
+* into the provided array of floats. This is the class that converts the task into a CPU thread, multiple CPU threads,
+* a GPU workload, or whatever else makes sense for the device. AudioOffloadProcessor stands between the Unity AudioOffload
+* system (Listeners, Sources, Calls, etc.) and any external libraries that are required (such as the GPU audio pipeline
+* that will being designed later).
+* <p>
+* AudioOffloadProcessor wraps all of the features that it wants to support into a set of methods, which calls the appropriate
+* external APIs as necessary.
+*
+* @author Scott Michaud
+* @version 0.1
+* @since 2015-07-14
+*/
+
 public static class AudioOffloadProcessor
 {
     enum Channel { Left, Right };
-    private static ManualResetEvent done;
 
+    /**
+    * The entry point for a list of Offload sound calls to be processed. It accepts a list of Offload calls, a reference
+    * to an array that it can dump the sound samples in to, and the Offload listener that is supposed to be "hearing"
+    * the sounds.
+    * <p>
+    * The method will return immediately. When the processing is done, it will flip bRenderComplete to true in the
+    * supplied Offload listener.
+    *
+    * @param SoundCalls The list of AudioOffloadCalls to process
+    * @param ScratchBuffer The reference to the array where output sound samples are placed
+    * @param Listener The AudioOffloadListener that is "hearing" the sounds. Also controls the synchronization lock.
+    * @since v0.1
+    */
     public static void QueueTask(List<AudioOffloadCall> SoundCalls, float[] ScratchBuffer, AudioOffloadListener Listener)
     {
         ThreadPool.QueueUserWorkItem(state => AudioWorkerJob(SoundCalls, ScratchBuffer, Listener));
