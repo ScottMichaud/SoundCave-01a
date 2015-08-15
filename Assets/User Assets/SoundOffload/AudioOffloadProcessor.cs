@@ -41,7 +41,7 @@ public static class AudioOffloadProcessor
     }
 
     //FIXME: Locked to Stereo Out, Mono In.
-
+    //This method is queued if the task is run in its own, single thread. It will *not* slow the Game or Audio threads.
     private static void AudioWorkerJob(List<AudioOffloadCall> SoundCalls, float[] ScratchBuffer, AudioOffloadListener Listener)
     {
         for (int i = 0; i < ScratchBuffer.Length; i++)
@@ -63,6 +63,7 @@ public static class AudioOffloadProcessor
         Listener.finishSoundProcessing();
     }
 
+    //This method takes a single sample and calculates distance, direction, etc.
     private static float CPU_CalculateSample(float Sample, AudioOffloadListener Listener, AudioOffloadCall SoundCall, Channel ChannelName)
     {
         float DistanceScale = 1.0f;
