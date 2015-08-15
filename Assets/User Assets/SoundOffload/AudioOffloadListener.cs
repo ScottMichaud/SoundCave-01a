@@ -16,6 +16,7 @@ public class AudioOffloadListener : MonoBehaviour {
 
     private Vector3 location;
     private Vector3 velocity;
+    private Vector3 direction;
 
 	private float lastFrameTime;
 	private int sampleRate;
@@ -47,12 +48,18 @@ public class AudioOffloadListener : MonoBehaviour {
     void FixedUpdate ()
     {
         setLastFrameTime(Time.unscaledTime);
+        Transform transform = GetComponentInParent<Transform>();
 
-        if (audioDestination)
+        velocity = (transform.position - location) / Time.fixedDeltaTime;
+        location = transform.position;
+        direction = transform.forward;
+
+        /*if (audioDestination)
         {
             velocity = (audioDestination.transform.position - location) / Time.fixedDeltaTime;
             location = audioDestination.transform.position;
-        }
+            direction = audioDestination.transform.forward;
+        }*/
     }
 
    /**
@@ -135,4 +142,19 @@ public class AudioOffloadListener : MonoBehaviour {
     {
 		lastFrameTime = (float) FrameTime;
 	}
+
+    public Vector3 getVelocity()
+    {
+        return velocity;
+    }
+
+    public Vector3 getLocation()
+    {
+        return location;
+    }
+
+    public Vector3 getDirection()
+    {
+        return direction;
+    }
 }
