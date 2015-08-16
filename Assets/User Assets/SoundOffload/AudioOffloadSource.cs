@@ -1,6 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+/**
+* AudioOffloadSource is a MonoBehaviour component that you attach to objects that you want to emit
+* sound. They will be sent to every AudioOffloadListener, regardless of whether they're active or not.
+* This will probably be subclassed by various types of placeable objects, based on how they actually emit
+* the sound (immediate, delayed, triggered, randomization, and so forth).
+* <p>
+* AudioOffloadSource currently just pushes a pre-defined AudioClip to World (0, 0, 0) for testing purposes.
+*
+* @author Scott Michaud
+* @version 0.1
+* @since 2015-06-24
+*/
 public class AudioOffloadSource : MonoBehaviour {
 
     public AudioClip SelectedClip;
@@ -40,11 +52,21 @@ public class AudioOffloadSource : MonoBehaviour {
 	
 	}
 
+    /**
+    * Getter for the source's current velocity
+    *
+    * @returns The source's current velocity
+    */
     public Vector3 getVelocity()
     {
         return velocity;
     }
 
+    /**
+    * Getter for the source's current location
+    *
+    * @returns The source's current location
+    */
     public Vector3 getLocation()
     {
         return location;

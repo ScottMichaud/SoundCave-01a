@@ -1,6 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+/**
+* AudioOffloadListener is a MonoBehaviour component that you attach to objects, which will likely
+* be either your player object or your camera. They have a list of sound calls that they send to
+* be processed every Audio Thread chunk. Think of an Audio Thread chunk like a "frame" for your
+* sound card, but it's not tied to video frame rate. It's typically ~43 chunks per second, locked. 
+* <p>
+* AudioOffloadListener adds the processed chunk to Unity's chunk just before it reaches the speaker.
+* It also holds relevant information, such as where it is, how fast it is moving, and which way it
+* is facing.
+*
+* @author Scott Michaud
+* @version 0.1
+* @since 2015-06-24
+*/
 public class AudioOffloadListener : MonoBehaviour {
 	public bool isEnabled;
 
@@ -33,6 +47,7 @@ public class AudioOffloadListener : MonoBehaviour {
 	void Start ()
     {
 		//Acquire the co-resident AudioListener
+        //TODO: Eventually get the active listener to allow multiple listeners.
 		audioDestination = GetComponentInParent<AudioListener>();
 		lastFrameTime = Time.unscaledTime;
 		sampleRate = AudioSettings.outputSampleRate;
@@ -45,6 +60,8 @@ public class AudioOffloadListener : MonoBehaviour {
 		
 	}
 
+    //Called once per physics frame, which is a more reliable way to get character and object
+    //position and velocity.
     void FixedUpdate ()
     {
         setLastFrameTime(Time.unscaledTime);
@@ -53,13 +70,6 @@ public class AudioOffloadListener : MonoBehaviour {
         velocity = (transform.position - location) / Time.fixedDeltaTime;
         location = transform.position;
         direction = transform.forward;
-
-        /*if (audioDestination)
-        {
-            velocity = (audioDestination.transform.position - location) / Time.fixedDeltaTime;
-            location = audioDestination.transform.position;
-            direction = audioDestination.transform.forward;
-        }*/
     }
 
    /**
@@ -118,41 +128,74 @@ public class AudioOffloadListener : MonoBehaviour {
         }
 	}
 
+    /**
+    * Sends the current sound calls to the processor.
+    * 
+    * @param SoundCalls The list of offloaded AudioOffloadCalls.
+    * @param ScratchBuffer Reference to the buffer where the result will be placed.
+    * @param Listener The AudioOffloadListener that is supposed to be hearing the SoundCalls.
+    */
     public void enqueueSoundProcessing(List<AudioOffloadCall> SoundCalls, float[] ScratchBuffer, AudioOffloadListener Listener)
     {
         AudioOffloadProcessor.QueueTask(SoundCalls, ScratchBuffer, Listener);
-        //Listener.finishSoundProcessing();
     }
 
+    /**
+    * Called by whatever thread completes the processing, which is monitored by the Audio Thread to
+    * know that the buffer is ready to add to Unity's audio pipe. Bools are small enough that
+    * read/writes are atomic on all platforms (guaranteed by C# spec itself).
+    */
     public void finishSoundProcessing()
     {
         bRenderComplete = true;
     }
 
-	public void addSoundCall (AudioOffloadCall SoundCall)
+    /**
+    * Adds an AudioOffloadCall to this listener. It is dumped to a queue so that multiple calls will
+    * be added all at once. This is for performance.
+    * 
+    * @param SoundCall The offloaded AudioOffloadCall.
+    */
+    public void addSoundCall (AudioOffloadCall SoundCall)
     {
 		if (SoundCall.isValid())
         {
 			newCalls.Add(SoundCall);
-			SoundCall.setStartTime(lastFrameTime);
+            //This will be set by the source instead.
+			//SoundCall.setStartTime(lastFrameTime);
 		}
 	}
 
-	void setLastFrameTime (double FrameTime)
+	private void setLastFrameTime (double FrameTime)
     {
 		lastFrameTime = (float) FrameTime;
 	}
 
+    /**
+    * Setter for velocity
+    * 
+    * @param Velocity The listener velocity at this point in time.
+    */
     public Vector3 getVelocity()
     {
         return velocity;
     }
 
+    /**
+    * Setter for location
+    * 
+    * @param Location The listener location at this point in time.
+    */
     public Vector3 getLocation()
     {
         return location;
     }
 
+    /**
+    * Setter for direction
+    * 
+    * @param Direction The listener direction at this point in time.
+    */
     public Vector3 getDirection()
     {
         return direction;
