@@ -66,7 +66,7 @@ public static class AudioOffloadProcessor
     //This method takes a single sample and calculates distance, direction, etc.
     private static float CPU_CalculateSample(float Sample, AudioOffloadListener Listener, AudioOffloadCall SoundCall, Channel ChannelName)
     {
-        float DistanceScale = 5.0f;
+        float DistanceScale = 3.0f;
 
         Vector3 Displacement = SoundCall.getLocation() - Listener.getLocation();
         float Distance = Displacement.magnitude;

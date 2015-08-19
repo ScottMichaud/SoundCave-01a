@@ -76,8 +76,40 @@ public class AudioOffloadCall
             && Clip.loadType == AudioClipLoadType.DecompressOnLoad)
         {
             audioContent = Clip;
-            sampleArray = new float[audioContent.samples];
-            audioContent.GetData(sampleArray, 0);
+
+            if (AudioSettings.outputSampleRate == Clip.frequency)
+            {
+                //No conversion necessary.
+                sampleArray = new float[audioContent.samples];
+                audioContent.GetData(sampleArray, 0);
+            }
+            else
+            {
+                float[] toConvert = new float[audioContent.samples];
+                audioContent.GetData(toConvert, 0);
+
+                int newSize = Mathf.CeilToInt((float)audioContent.samples * ((float)AudioSettings.outputSampleRate / (float)Clip.frequency));
+                sampleArray = new float[newSize];
+
+                sampleArray[0] = toConvert[0];
+                sampleArray[newSize - 1] = toConvert[toConvert.Length - 1];
+
+
+                for (int i = 1; i < (newSize - 2); i++)
+                {
+                    float position = ((float)i / (float)(newSize - 1)) * (float)(toConvert.Length - 1);
+
+                    //Look forward and back... if position lies on an integer this will be the same.
+                    float firstSample = toConvert[Mathf.FloorToInt(position)];
+                    float secondSample = toConvert[Mathf.CeilToInt(position)];
+
+                    //The distance between first and second will linearly weight between the two samples.
+                    float secondWeight = position - (Mathf.Floor(position));
+                    float firstWeight = 1.0F - secondWeight;
+
+                    sampleArray[i] = (firstWeight * firstSample) + (secondWeight * secondSample);
+                }
+            }
         }
         else
         {
