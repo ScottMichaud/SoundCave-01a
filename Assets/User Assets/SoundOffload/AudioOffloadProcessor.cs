@@ -76,6 +76,8 @@ public static class AudioOffloadProcessor
         Vector3 Left = new Vector3(-Forward.z, Forward.y, Forward.x); //Rotation Matrix for Left around world.
 
         float Balance = 1.0F;
+        
+        //FIXME: Scratchy audio when doing stereo calculation
         if (ChannelName == Channel.Left)
         {
             Balance = Vector3.Dot(Left, Direction);
