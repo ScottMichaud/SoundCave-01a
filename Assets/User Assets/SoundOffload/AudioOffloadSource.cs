@@ -52,6 +52,14 @@ public class AudioOffloadSource : MonoBehaviour {
 	
 	}
 
+    void FixedUpdate()
+    {
+        Transform transform = GetComponentInParent<Transform>();
+
+        velocity = (transform.position - location) / Time.fixedDeltaTime;
+        location = transform.position;
+    }
+
     /**
     * Getter for the source's current velocity
     *
